@@ -14,7 +14,7 @@ default: build
 
 .PHONY: clean
 clean:
-	@rm -rf bin/
+	@rm -rf bin/ ${BINARY}.zip
 
 .PHONY: pretest
 pretest:
@@ -34,14 +34,16 @@ fmt:
 
 .PHONY: lint
 lint:
-	golint ./... | grep -v vendor/
+	golint ./...
 
 .PHONY: build
-build:
+build: test
 	@GOOS=linux go build -x -ldflags ${LDFLAGS} -o bin/${BINARY} github.com/umayr/${REPO}/cmd/${BINARY}
 
+bin/${BINARY}: build
+
 .PHONY: zip
-zip:
+zip: bin/${BINARY}
 	cp bin/${BINARY} .
 	zip ${BINARY}.zip ${BINARY}
 	rm ./${BINARY}
